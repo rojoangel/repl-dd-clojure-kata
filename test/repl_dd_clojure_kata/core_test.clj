@@ -89,6 +89,18 @@
     :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"}]
   )
 
+(comment
+  (def a-replacement
+    {:Value {:Value "00.00"}
+     :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:1076"})
+  (select-keys a-replacement [:Id])
+  (select-keys a-replacement [:Value])
+  (defn get-replacement-condition [replacement]
+    (select-keys replacement [:Id]))
+  (defn get-replacement-value [replacement]
+    (select-keys replacement [:Value]))
+  )
+
 (defn update-in-parameter [parameter id value-keys-map new-value]
   (update-in parameter
              value-keys-map
