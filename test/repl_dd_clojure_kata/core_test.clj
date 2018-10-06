@@ -82,6 +82,27 @@
                          :DisplayName "Comm Status", :DataSourceId 41}],
    :DisplayName        "Live values items"})
 
+(def simplified-input
+  {:CardProperties     [{:Parameter    {:Name "Assigned Irradiance",
+                                        :Unit "W/m2"},
+                         :Value        {:Value 601.030029296875,
+                                        :Date  "2018-10-02T15:08:34"},
+                         :Id           "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70",
+                         :TypeKey      "3564134b-4cab-5757-98ff-4ff8d48deac6",
+                         :DisplayName  "Assigned Irradiance",
+                         :DataSourceId 2162}],
+   :DisplayName        "Live values items"})
+
+(def a-parameter
+  {:Parameter    {:Name "Assigned Irradiance",
+                  :Unit "W/m2"},
+   :Value        {:Value 601.030029296875,
+                  :Date  "2018-10-02T15:08:34"},
+   :Id           "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70",
+   :TypeKey      "3564134b-4cab-5757-98ff-4ff8d48deac6",
+   :DisplayName  "Assigned Irradiance",
+   :DataSourceId 2162})
+
 (def replacements
   [{:Value {:Value "00.00"}
     :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:1076"}
@@ -89,7 +110,16 @@
     :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"}]
   )
 
-(defn substitute [input replacements]
+(comment
+  (update-in a-parameter
+             [:Value :Date]
+             (fn [current-field-value new-field-value expected-id parameter]
+               (if (= (:Id parameter) expected-id)
+                 new-field-value
+                 current-field-value))
+             "2000-01-01T00:00:00"
+             "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"
+             a-parameter)
   )
 
 (deftest acceptance-test
