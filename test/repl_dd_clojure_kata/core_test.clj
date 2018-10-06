@@ -89,10 +89,10 @@
     :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"}]
   )
 
-(defn get-replacement-condition [replacement]
+(defn replacement->condition [replacement]
   (select-keys replacement [:Id]))
 
-(defn get-replacement-value [replacement]
+(defn replacement->value [replacement]
   (select-keys replacement [:Value]))
 
 (defn update-in-parameter [parameter id value-keys-map new-value]
@@ -114,13 +114,13 @@
     (let [a-replacement {:Value {:Value "00.00"}
                          :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:1076"}
           expected-condition {:Id "id-device:ba986401-c31c-43c7-9065-fc12ee711474:1076"}]
-      (is (= expected-condition (get-replacement-condition a-replacement)))))
+      (is (= expected-condition (replacement->condition a-replacement)))))
 
   (testing "should return replacement value"
     (let [a-replacement {:Value {:Value "00.00"}
                          :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:1076"}
           expected-value {:Value {:Value "00.00"}}]
-      (is (= expected-value (get-replacement-value a-replacement)))))
+      (is (= expected-value (replacement->value a-replacement)))))
 
   (testing "should update value in parameter when id matches"
     (let [a-parameter {:Parameter    {:Name "Assigned Irradiance",
