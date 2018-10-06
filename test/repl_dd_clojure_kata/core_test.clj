@@ -95,11 +95,23 @@
 (defn replacement->value [replacement]
   (select-keys replacement [:Value]))
 
+(defn condition->keys [condition]
+  (keys condition))
+
+(defn condition->value [condition]
+  (get-in condition (condition->keys condition)))
+
+(defn value->keys [value]
+  (concat (keys value) (keys (get-in value (keys value)))))
+
+(defn value->value [value]
+  (get-in value (value->keys value)))
+
 (defn update-in-parameter [parameter condition value]
-  (let [condition-keys (keys condition)
-        condition-value (get-in condition condition-keys)
-        value-keys (concat (keys value) (keys (get-in value (keys value))))
-        value-value (get-in value value-keys)]
+  (let [condition-keys (condition->keys condition)
+        condition-value (condition->value condition)
+        value-keys (value->keys value)
+        value-value (value->value value)]
     (update-in parameter
                value-keys
                #(if (= (get-in parameter condition-keys) condition-value)
@@ -126,6 +138,26 @@
           expected-value {:Value {:Value "00.00"}}]
       (is (= expected-value (replacement->value a-replacement)))))
 
+  (testing "should return replacement condition keys"
+    (let [a-replacement-condition {:Id "id-device:ba986401-c31c-43c7-9065-fc12ee711474:1076"}
+          expected-value [:Id]]
+      (is (= expected-value (condition->keys a-replacement-condition)))))
+
+  (testing "should return replacement condition value"
+    (let [a-replacement-condition {:Id "id-device:ba986401-c31c-43c7-9065-fc12ee711474:1076"}
+          expected-value "id-device:ba986401-c31c-43c7-9065-fc12ee711474:1076"]
+      (is (= expected-value (condition->value a-replacement-condition)))))
+
+  (testing "should return replacement value keys"
+    (let [a-replacement-value {:Value {:Date "2000-01-01T00:00:00"}}
+          expected-value [:Value :Date]]
+      (is (= expected-value (value->keys a-replacement-value)))))
+
+  (testing "should return replacement value value"
+    (let [a-replacement-value {:Value {:Date "2000-01-01T00:00:00"}}
+          expected-value "2000-01-01T00:00:00"]
+      (is (= expected-value (value->value a-replacement-value)))))
+
   (testing "should update value in parameter when id matches"
     (let [a-parameter {:Parameter    {:Name "Assigned Irradiance",
                                       :Unit "W/m2"},
@@ -135,7 +167,7 @@
                        :TypeKey      "3564134b-4cab-5757-98ff-4ff8d48deac6",
                        :DisplayName  "Assigned Irradiance",
                        :DataSourceId 2162}
-          condition {:Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"}
+          condition {:Id "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"}
           value {:Value {:Date "2000-01-01T00:00:00"}}
           value-keys-map [:Value :Date]
           new-value "2000-01-01T00:00:00"]
