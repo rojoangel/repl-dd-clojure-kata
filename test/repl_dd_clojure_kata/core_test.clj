@@ -120,7 +120,17 @@
              "2000-01-01T00:00:00"
              "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"
              a-parameter)
+  (def new-value "2000-01-01T00:00:00")
+  (def id "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70")
+  (def value-keys-map [:Value :Date])
   )
+
+(defn update-in-parameter [parameter id value-keys-map new-value]
+  (update-in parameter
+             value-keys-map
+             #(if (= (:Id parameter) id)
+                new-value
+                %1)))
 
 (deftest acceptance-test
   (testing "should replace input according to incoming instructions"
