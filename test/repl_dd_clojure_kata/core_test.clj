@@ -134,7 +134,8 @@
                  %1))))
 
 (defn substitute [input replacements]
-  )
+  (update input :CardProperties
+          (fn [properties] (map #(reduce update-in-parameter %1 replacements) properties))))
 
 (deftest acceptance-test
   (testing "should replace input according to incoming instructions"
