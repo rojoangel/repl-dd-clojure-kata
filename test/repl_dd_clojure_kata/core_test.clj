@@ -107,16 +107,21 @@
 (defn value->value [value]
   (get-in value (value->keys value)))
 
-(defn update-in-parameter [parameter condition value]
-  (let [condition-keys (condition->keys condition)
-        condition-value (condition->value condition)
-        value-keys (value->keys value)
-        value-value (value->value value)]
-    (update-in parameter
-               value-keys
-               #(if (= (get-in parameter condition-keys) condition-value)
-                  value-value
-                  %1))))
+(defn update-in-parameter
+  ([parameter replacement]
+   (let [condition (replacement->condition replacement)
+         value (replacement->value replacement)]
+     (update-in-parameter parameter condition value)))
+  ([parameter condition value]
+   (let [condition-keys (condition->keys condition)
+         condition-value (condition->value condition)
+         value-keys (value->keys value)
+         value-value (value->value value)]
+     (update-in parameter
+                value-keys
+                #(if (= (get-in parameter condition-keys) condition-value)
+                   value-value
+                   %1)))))
 
 (defn substitute [input replacements]
   )
@@ -173,4 +178,19 @@
           new-value "2000-01-01T00:00:00"]
       (is (= new-value (get-in
                          (update-in-parameter a-parameter condition value)
+                         value-keys-map))))
+    (let [a-parameter {:Parameter    {:Name "Assigned Irradiance",
+                                      :Unit "W/m2"},
+                       :Value        {:Value 601.030029296875,
+                                      :Date  "2018-10-02T15:08:34"},
+                       :Id           "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70",
+                       :TypeKey      "3564134b-4cab-5757-98ff-4ff8d48deac6",
+                       :DisplayName  "Assigned Irradiance",
+                       :DataSourceId 2162}
+          a-replacement {:Value {:Date "2000-01-01T00:00:00"}
+                         :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"}
+          value-keys-map [:Value :Date]
+          new-value "2000-01-01T00:00:00"]
+      (is (= new-value (get-in
+                         (update-in-parameter a-parameter a-replacement)
                          value-keys-map))))))
