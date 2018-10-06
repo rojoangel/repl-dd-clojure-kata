@@ -133,9 +133,11 @@
                  value-value
                  %1))))
 
+(defn update-in-card-propeties [properties replacements]
+  (map #(reduce update-in-parameter %1 replacements) properties))
+
 (defn substitute [input replacements]
-  (update input :CardProperties
-          (fn [properties] (map #(reduce update-in-parameter %1 replacements) properties))))
+  (update input :CardProperties update-in-card-propeties replacements))
 
 (deftest acceptance-test
   (testing "should replace input according to incoming instructions"
