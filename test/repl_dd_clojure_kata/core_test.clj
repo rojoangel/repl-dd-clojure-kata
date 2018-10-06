@@ -95,33 +95,18 @@
 (defn replacement->value [replacement]
   (select-keys replacement [:Value]))
 
-(defn update-in-parameter [parameter id value-keys-map new-value]
-  (update-in parameter
-             value-keys-map
-             #(if (= (:Id parameter) id)
-                new-value
-                %1)))
+(defn update-in-parameter [parameter condition value]
+  (let [condition-keys (keys condition)
+        condition-value (get-in condition condition-keys)
+        value-keys (concat (keys value) (keys (get-in value (keys value))))
+        value-value (get-in value value-keys)]
+    (update-in parameter
+               value-keys
+               #(if (= (get-in parameter condition-keys) condition-value)
+                  value-value
+                  %1))))
 
 (defn substitute [input replacements]
-  )
-
-(comment
-  (def a-replacement {:Value {:Date "2000-01-01T00:00:00"}
-                      :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"})
-  (def condition (replacement->condition a-replacement))
-  (def value (replacement->value a-replacement))
-  (conj (keys replacement-value) (first (keys (get-in replacement-value (keys replacement-value)))))
-  (defn update-in-parameter [parameter condition value]
-    (let [condition-keys (keys condition)
-          condition-value (get-in condition condition-keys)
-          value-keys (concat (keys value) (keys (get-in value (keys value))))
-          value-value (get-in value value-keys)]
-      (update-in parameter
-                 value-keys
-                 #(if (= (get-in parameter condition-keys) condition-value)
-                    value-value
-                    %1))))
-  (replace-in-parameter a-parameter condition value)
   )
 
 (deftest acceptance-test
@@ -150,9 +135,10 @@
                        :TypeKey      "3564134b-4cab-5757-98ff-4ff8d48deac6",
                        :DisplayName  "Assigned Irradiance",
                        :DataSourceId 2162}
-          id "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"
+          condition {:Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"}
+          value {:Value {:Date "2000-01-01T00:00:00"}}
           value-keys-map [:Value :Date]
           new-value "2000-01-01T00:00:00"]
       (is (= new-value (get-in
-                         (update-in-parameter a-parameter id value-keys-map new-value)
+                         (update-in-parameter a-parameter condition value)
                          value-keys-map))))))
