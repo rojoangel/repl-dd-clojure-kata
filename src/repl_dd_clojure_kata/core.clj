@@ -47,5 +47,5 @@
 (defn update-in-card-propeties [properties replacements]
   (map #(reduce update-in-parameter %1 replacements) properties))
 
-(defn substitute [input replacements]
+(defn update-in-card [input replacements]
   (update input :CardProperties update-in-card-propeties replacements))

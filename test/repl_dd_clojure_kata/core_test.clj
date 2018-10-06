@@ -84,7 +84,7 @@
                                           :TypeKey     "8e95d579-c7f7-50d7-a00a-7fbe6e5b0f4e",
                                           :DisplayName "Comm Status", :DataSourceId 41}],
                     :DisplayName        "Live values items"}]
-      (is (= expected (substitute input replacements))))))
+      (is (= expected (update-in-card input replacements))))))
 
 (deftest unit-tests
   (testing "should return replacement condition"
