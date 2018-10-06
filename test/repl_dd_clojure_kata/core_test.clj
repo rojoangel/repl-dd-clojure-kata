@@ -105,6 +105,25 @@
 (defn substitute [input replacements]
   )
 
+(comment
+  (def a-replacement {:Value {:Date "2000-01-01T00:00:00"}
+                      :Id    "id-device:ba986401-c31c-43c7-9065-fc12ee711474:70"})
+  (def condition (replacement->condition a-replacement))
+  (def value (replacement->value a-replacement))
+  (conj (keys replacement-value) (first (keys (get-in replacement-value (keys replacement-value)))))
+  (defn update-in-parameter [parameter condition value]
+    (let [condition-keys (keys condition)
+          condition-value (get-in condition condition-keys)
+          value-keys (concat (keys value) (keys (get-in value (keys value))))
+          value-value (get-in value value-keys)]
+      (update-in parameter
+                 value-keys
+                 #(if (= (get-in parameter condition-keys) condition-value)
+                    value-value
+                    %1))))
+  (replace-in-parameter a-parameter condition value)
+  )
+
 (deftest acceptance-test
   (testing "should replace input according to incoming instructions"
     (is (= expected (substitute input replacements)))))
